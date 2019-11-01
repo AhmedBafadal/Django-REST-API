@@ -5,7 +5,10 @@ from rest_framework.permissions import IsAuthenticated
 from core.models import Tag, Ingredient, Recipe
 from recipe import serializers
 
-class BaseRecipeAttrViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.CreateModelMixin):
+
+class BaseRecipeAttrViewSet(viewsets.GenericViewSet,
+                            mixins.ListModelMixin,
+                            mixins.CreateModelMixin):
     """Base viewset for user owned recipe attributes"""
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsAuthenticated,)
@@ -17,7 +20,6 @@ class BaseRecipeAttrViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixi
     def perform_create(self, serializer):
         """Create a new object"""
         serializer.save(user=self.request.user)
-
 
 
 class TagViewSet(BaseRecipeAttrViewSet):

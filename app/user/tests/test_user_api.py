@@ -11,12 +11,14 @@ TOKEN_URL = reverse('user:token')
 # url of account of user authenticated
 ME_URL = reverse('user:me')
 
+
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
 
 
 class PublicUserApiTests(TestCase):
     """Test the users API (public)"""
+
     def setUp(self):
         self.client = APIClient()
 
@@ -24,7 +26,7 @@ class PublicUserApiTests(TestCase):
         """Test creating user with valid payload is successful"""
         payload = {
             'email': 'test@testmail.com',
-            'password':'testpass',
+            'password': 'testpass',
             'name': 'Test name'
         }
 
@@ -39,7 +41,7 @@ class PublicUserApiTests(TestCase):
         """Test creating user that alreads exists fails"""
         payload = {
             'email': 'test@testmail.com',
-            'password':'testpass',
+            'password': 'testpass',
         }
         create_user(**payload)
 
@@ -48,9 +50,9 @@ class PublicUserApiTests(TestCase):
 
     def test_password_too_short(self):
         """Test that the password must be more than 5 characters"""
-        payload = {'email': 'test@testmail.com','password':'pw'}
+        payload = {'email': 'test@testmail.com', 'password': 'pw'}
         res = self.client.post(CREATE_USER_URL, payload)
-         
+
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         user_exists = get_user_model().objects.filter(
             email=payload['email']
@@ -61,24 +63,22 @@ class PublicUserApiTests(TestCase):
         """Test that  atoken is created for the user"""
         payload = {'email': 'test@londonappdev.com', 'password': 'testpass'}
         create_user(**payload)
-        res = self.client.post(TOKEN_URL, payload)        
+        res = self.client.post(TOKEN_URL, payload)
         self.assertIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-    
     def test_create_token_invalid_credentials(self):
         """Test that token is not created if invalid credentials are given"""
         create_user(email='test@testmail.com', password='testpass')
-        payload = {'email':'test@testmail.com', 'password':'wrong'}
+        payload = {'email': 'test@testmail.com', 'password': 'wrong'}
 
         res = self.client.post(TOKEN_URL, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
-
     def test_create_token_no_user(self):
         """Test that token is not created if user does not exist"""
-        payload = {'email':'test@testmail.com', 'password':'testpass'}
+        payload = {'email': 'test@testmail.com', 'password': 'testpass'}
         res = self.client.post(TOKEN_URL, payload)
 
         self.assertNotIn('token', res.data)
@@ -86,7 +86,7 @@ class PublicUserApiTests(TestCase):
 
     def test_create_token_missing_field(self):
         """Test that email and password are required"""
-        res = self.client.post(TOKEN_URL, {'email':'one', 'password':''})
+        res = self.client.post(TOKEN_URL, {'email': 'one', 'password': ''})
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
@@ -113,8 +113,8 @@ class PrivateUserAPITests(TestCase):
         res = self.client.get(ME_URL)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, {
-        'name':self.user.name,
-        'email':self.user.email
+            'name': self.user.name,
+            'email': self.user.email
         })
 
     def test_post_me_not_allowed(self):
@@ -124,9 +124,9 @@ class PrivateUserAPITests(TestCase):
 
     def test_update_user_profile(self):
         """Test updating the user profile for authenticated user"""
-        payload = {'name':'new name', 'password':'newpassword123'}
+        payload = {'name': 'new name', 'password': 'newpassword123'}
         res = self.client.patch(ME_URL, payload)
-        
+
         self.user.refresh_from_db()
         self.assertEqual(self.user.name, payload['name'])
         self.assertTrue(self.user.check_password(payload['password']))

@@ -14,9 +14,9 @@ RECIPES_URL = reverse('recipe:recipe-list')
 def sample_recipe(user, **params):
     """Create and return a sample recipe"""
     defaults = {
-        'title':'Sample recipe',
-        'time_minutes':10,
-        'price':5
+        'title': 'Sample recipe',
+        'time_minutes': 10,
+        'price': 5
     }
     defaults.update(params)
 
@@ -28,12 +28,13 @@ class PublicRecipeApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-    
+
     def test_auth_required(self):
         """Test that authentication is requried"""
         res = self.client.get(RECIPES_URL)
 
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateRecipeApiTests(TestCase):
     """Test authenticated recipe API access"""
@@ -45,7 +46,7 @@ class PrivateRecipeApiTests(TestCase):
             'testpass'
         )
         self.client.force_authenticate(self.user)
-    
+
     def test_retrieve_recipes(self):
         """Test retrieving a list of recipes"""
         sample_recipe(user=self.user)
@@ -56,7 +57,6 @@ class PrivateRecipeApiTests(TestCase):
         serializer = RecipeSerializer(recipes, many=True)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
-
 
     def test_recipres_limited_to_user(self):
         """Test retrieving recipes for user"""

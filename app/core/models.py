@@ -5,6 +5,7 @@ from django.conf import settings
 
 # Create your models here.
 
+
 class UserManager(BaseUserManager):
 
     def create_user(self, email, password=None, **extra_fields):
@@ -24,6 +25,7 @@ class UserManager(BaseUserManager):
         user.is_superuser = True
         user.save(using=self._db)
         return user
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """Custom user model that supports using email instead of username"""
@@ -47,6 +49,7 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+
 class Ingredient(models.Model):
     """Ingredient to be used in a recipe"""
     name = models.CharField(max_length=255)
@@ -54,8 +57,10 @@ class Ingredient(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
+
     def __str__(self):
         return self.name
+
 
 class Recipe(models.Model):
     """Recipe object"""
@@ -73,5 +78,3 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.title
-
-
